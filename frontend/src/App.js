@@ -10,10 +10,10 @@ function App() {
 
   return (
     <div>
+      <h1>Research Paper Summarizer</h1>
       <div>
         <InfoMessage />
       </div>
-      <h1>Research Paper Summarizer</h1>
       {!article ? (
         <ResearchList setArticle={setArticle} />
       ) : (

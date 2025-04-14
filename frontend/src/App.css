@@ -2,9 +2,15 @@
   text-align: center;
 }
 
+h1{
+  text-align: center;
+  color: #252626;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
+  color: aquamarine;
 }
 
 @media (prefers-reduced-motion: no-preference) {

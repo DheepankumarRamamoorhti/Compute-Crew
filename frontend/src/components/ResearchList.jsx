@@ -29,32 +29,98 @@ const ResearchList = ({ setArticle }) => {
         setLoading(false);
       });
   };
-  console.log("Articles: ", articles)
+
+  const styles = {
+    container: {
+      backgroundColor: "#121212",
+      color: "#FFFFFF",
+      minHeight: "100vh",
+      padding: "30px",
+      fontFamily: "Arial, sans-serif",
+    },
+    heading: {
+      fontSize: "28px",
+      fontWeight: "600",
+      marginBottom: "20px",
+      borderBottom: "1px solid #333",
+      paddingBottom: "10px",
+    },
+    articleCard: {
+      backgroundColor: "#1E1E1E",
+      padding: "20px",
+      borderRadius: "12px",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+      marginBottom: "20px",
+      transition: "box-shadow 0.3s ease",
+    },
+    title: {
+      fontSize: "20px",
+      fontWeight: "bold",
+      marginBottom: "8px",
+    },
+    authors: {
+      fontStyle: "italic",
+      color: "#BBBBBB",
+      fontSize: "14px",
+      marginBottom: "4px",
+    },
+    published: {
+      fontSize: "13px",
+      color: "#AAAAAA",
+      marginBottom: "15px",
+    },
+    buttonGroup: {
+      display: "flex",
+      gap: "12px",
+    },
+    button: {
+      padding: "10px 16px",
+      borderRadius: "8px",
+      fontSize: "14px",
+      border: "none",
+      cursor: "pointer",
+    },
+    extractButton: {
+      backgroundColor: "#7C3AED",
+      color: "#FFFFFF",
+    },
+    viewButton: {
+      backgroundColor: "#2563EB",
+      color: "#FFFFFF",
+    },
+  };
+
   return (
-    <div>
-      <h2>Research Articles (arXiv)</h2>
+    <div style={styles.container}>
+      <h2 style={styles.heading}>Research Articles (arXiv)</h2>
       <ul>
         {articles.map((article, index) => (
-          <li
-            key={index}
-            onClick={() => setArticle(article)}
-            style={{
-              cursor: "pointer",
-              marginBottom: "15px",
-              padding: "10px",
-              borderBottom: "1px solid #ccc"
-            }}
-          >
-            <strong>{article.title}</strong> <br />
-            <em>Authors: {article.authors.join(", ")}</em> <br />
-            Published: {new Date(article.published).toDateString()} <br />
+          <li key={index} style={styles.articleCard}>
+            <h3 style={styles.title}>{article.title}</h3>
+            <p style={styles.authors}>
+              Authors: {article.authors.join(", ")}
+            </p>
+            <p style={styles.published}>
+              Published: {new Date(article.published).toDateString()}
+            </p>
             {article.pdfUrl && (
-              <button onClick={()=>extractPdfText(article.pdfUrl)}>
-                {loading ? "Extracting..." : "Extract PDF Text"}
-              <a href={article.pdfUrl} target="_blank" rel="noopener noreferrer" onClick={extractPdfText}>
-                📄 View Full Paper
-              </a>
-              </button>
+              <div style={styles.buttonGroup}>
+                <button
+                  style={{ ...styles.button, ...styles.extractButton }}
+                  onClick={() => extractPdfText(article.pdfUrl)}
+                  disabled={loading}
+                >
+                  {loading ? "Extracting..." : "Extract PDF Text"}
+                </button>
+                <a
+                  href={article.pdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ ...styles.button, ...styles.viewButton, textDecoration: "none", display: "inline-block" }}
+                >
+                  📄 View Full Paper
+                </a>
+              </div>
             )}
           </li>
         ))}
