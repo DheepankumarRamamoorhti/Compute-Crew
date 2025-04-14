@@ -100,9 +100,7 @@ app.post("/api/extract-pdf-text", async (req, res) => {
         const pdfData = await pdfParse(dataBuffer);
 
         fs.unlinkSync(filePath);
-        console.log("PDF Data: ", pdfData?.text);
-        // console.log("PDF text: ", pdfData?.text);
-        // console.log("Hello from extract-pdf-text: ", pdfUrl);
+        
         res.json({ text: pdfData.text });
       } catch (parseError) {
         console.error("PDF Parsing Error:", parseError.message);
