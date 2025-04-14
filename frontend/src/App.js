@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import ResearchList from './components/ResearchList';
 import Summary from './components/Sumary';
+import InfoMessage from './components/Info/info';
 import { useState } from 'react';
 
 function App() {
@@ -9,6 +10,9 @@ function App() {
 
   return (
     <div>
+      <div>
+        <InfoMessage />
+      </div>
       <h1>Research Paper Summarizer</h1>
       {!article ? (
         <ResearchList setArticle={setArticle} />
