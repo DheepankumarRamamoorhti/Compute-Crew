@@ -2,8 +2,10 @@ import logo from './logo.svg';
 import './App.css';
 import ResearchList from './components/ResearchList';
 import Summary from './components/Sumary';
+import SearchBar from './components/Info/searchbar'; 
 import InfoMessage from './components/Info/info';
 import { useState } from 'react';
+
 
 function App() {
   const [article, setArticle] = useState(null);
@@ -19,6 +21,9 @@ function App() {
       ) : (
         <Summary article={article} />
       )}
+      <div >
+        <SearchBar />
+      </div>
     </div>
   );
 }

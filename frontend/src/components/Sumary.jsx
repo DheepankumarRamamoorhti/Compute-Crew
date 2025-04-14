@@ -1,4 +1,3 @@
-// frontend/src/components/Summary.js
 import React, { useState } from "react";
 import axios from "axios";
 
@@ -23,31 +22,56 @@ const Summary = ({ article }) => {
       });
   };
 
-  return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "auto" }}>
-      <h2>Full Extracted Text</h2>
-      <pre style={{
-        whiteSpace: "pre-wrap",
-        background: "#f5f5f5",
-        padding: "15px",
-        borderRadius: "8px",
-        fontSize: "14px",
-        lineHeight: "1.6",
-        maxHeight: "500px",
-        overflowY: "auto",
-        border: "1px solid #ddd"
-      }}>
-        {article?.text}
-      </pre>
+  const containerStyle = {
+    padding: "20px",
+    maxWidth: "800px",
+    margin: "auto",
+    backgroundColor: "#121212",
+    color: "#e0e0e0",
+    minHeight: "100vh",
+  };
 
-      <button onClick={generateSummary} disabled={loading} style={{ marginTop: "20px", padding: "10px 15px" }}>
+  const preStyle = {
+    whiteSpace: "pre-wrap",
+    background: "#1e1e1e",
+    padding: "15px",
+    borderRadius: "8px",
+    fontSize: "14px",
+    lineHeight: "1.6",
+    maxHeight: "500px",
+    overflowY: "auto",
+    border: "1px solid #444",
+  };
+
+  const summaryStyle = {
+    background: "#2a2a40",
+    padding: "10px",
+    borderRadius: "6px",
+  };
+
+  const buttonStyle = {
+    marginTop: "20px",
+    padding: "10px 15px",
+    backgroundColor: "#333",
+    color: "#fff",
+    border: "none",
+    cursor: "pointer",
+    borderRadius: "4px",
+  };
+
+  return (
+    <div style={containerStyle}>
+      <h2>Full Extracted Text</h2>
+      <pre style={preStyle}>{article?.text}</pre>
+
+      <button onClick={generateSummary} disabled={loading} style={buttonStyle}>
         {loading ? "Generating..." : "Generate Summary"}
       </button>
 
       {summary && (
         <div style={{ marginTop: "20px" }}>
           <h3>Summary</h3>
-          <p style={{ background: "#eef", padding: "10px", borderRadius: "6px" }}>{summary}</p>
+          <p style={summaryStyle}>{summary}</p>
         </div>
       )}
 

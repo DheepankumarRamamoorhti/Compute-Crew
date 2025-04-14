@@ -25,9 +25,6 @@ const InfoMessage = () => {
     <div className="card-container">
       <Card className="card">
         <CardContent>
-          {/* <Typography variant="h5" component="div">
-            Welcome!
-          </Typography> */}
           <Button
             variant="contained"
             color="primary"
@@ -36,6 +33,7 @@ const InfoMessage = () => {
           >
             Click here to explore interesting articles
           </Button>
+          
           {articles && (
             <Typography variant="body2" color="textSecondary" className="articles">
               {articles}
