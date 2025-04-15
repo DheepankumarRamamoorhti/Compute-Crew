@@ -12,7 +12,7 @@ function App() {
 
   return (
     <div>
-      <h1>Research Paper Summarizer</h1>
+      
       <div>
         <InfoMessage />
       </div>

@@ -3,6 +3,7 @@
 }
 
 h1{
+  display: flex;
   text-align: center;
   color: #252626;
 }
