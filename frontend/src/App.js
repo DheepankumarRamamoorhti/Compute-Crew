@@ -16,14 +16,14 @@ function App() {
       <div>
         <InfoMessage />
       </div>
+      <div >
+        <SearchBar />
+      </div>
       {!article ? (
         <ResearchList setArticle={setArticle} />
       ) : (
         <Summary article={article} />
       )}
-      <div >
-        <SearchBar />
-      </div>
     </div>
   );
 }

@@ -24,37 +24,35 @@ const SearchBar = () => {
   };
 
   return (
-    <div className="p-4 max-w-xl mx-auto">
-      <form onSubmit={handleSearch} className="flex gap-2 mb-4">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search for research papers..."
-          className="flex-1 px-4 py-2 border rounded-md"
-        />
-        <button type="submit" className="px-4 py-2 bg-blue-600 text-red rounded-md">
-          Search
-        </button>
-      </form>
+    <div className="p-4">
+  <form onSubmit={handleSearch}>
+    <input
+      type="text"
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+      placeholder="Search for research papers..."
+    />
+    <button type="submit">Search</button>
+  </form>
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <ul className="space-y-4">
-          {papers.map((paper, index) => (
-            <li key={index} className="border p-4 rounded-md shadow-sm">
-              <h3 className="font-semibold text-lg">{paper.title}</h3>
-              <p className="text-sm text-gray-600 mb-1">Published: {new Date(paper.published).toLocaleDateString()}</p>
-              <p className="text-sm text-gray-800">{paper.summary}</p>
-              <a href={paper.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 mt-2 block">
-                View PDF
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+  {loading ? (
+    <p>Loading...</p>
+  ) : (
+    <ul>
+      {papers.map((paper, index) => (
+        <li key={index}>
+          <h3>{paper.title}</h3>
+          <p>Published: {new Date(paper.published).toLocaleDateString()}</p>
+          <p>{paper.summary}</p>
+          <a href={paper.pdfUrl} target="_blank" rel="noopener noreferrer">
+            View PDF
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
+
   );
 };
 
