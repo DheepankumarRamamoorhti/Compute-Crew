@@ -1,44 +1,37 @@
-import { useState } from "react";
-import InfoMessage from "./components/Info/info";
-import ResearchList from "./components/ResearchList";
-import Summary from "./components/Sumary";
-import SearchBar from "./components/Info/searchbar";
-import Signup from "./pages/Signup"; // ✅ Import it
-import "./App.css";
+import './App.css';
+import { useState } from 'react';
+import ResearchList from './components/ResearchList';
+import Summary from './components/Sumary';
+import SearchBar from './components/Info/searchbar'; 
+import InfoMessage from './components/Info/info';
+import Signup from './pages/Signup'; // ✅ Include Signup page
 
 function App() {
   const [article, setArticle] = useState(null);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); // ✅ Track if user is signed up
 
   const handleSignup = (email) => {
-    setUser(email);
+    setUser(email); // Just store email to mark user "signed in"
   };
 
   return (
     <div>
-<<<<<<< HEAD
-      
-      <div>
-        <InfoMessage />
-      </div>
-      <div >
-        <SearchBar />
-      </div>
-      {!article ? (
-        <ResearchList setArticle={setArticle} />
-=======
+      {/* ✅ Show signup first */}
       {!user ? (
         <Signup onSignup={handleSignup} />
->>>>>>> 6b86a70 (Added Signup page and updated App.js logic)
       ) : (
         <>
-          <InfoMessage />
+          <div>
+            <InfoMessage />
+          </div>
           {!article ? (
             <ResearchList setArticle={setArticle} />
           ) : (
             <Summary article={article} />
           )}
-          <SearchBar />
+          <div>
+            <SearchBar />
+          </div>
         </>
       )}
     </div>
