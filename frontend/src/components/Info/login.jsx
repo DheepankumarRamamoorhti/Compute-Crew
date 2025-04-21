@@ -1,25 +1,25 @@
 import React, { useState } from 'react';
 
-const Signup = ({ onSignup }) => {
+const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignup = (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
     if (email && password) {
-      onSignup(email); // Proceed to app
+      onLogin(email); // Proceed to app
     }
   };
 
   return (
     <div style={styles.container}>
-      {/* Left Section - Signup Form */}
+      {/* Left Section - Login Form */}
       <div style={styles.left}>
-        <h2 style={styles.heading}>SIGN UP FOR FREE IN LESS THAN A MINUTE</h2>
-        <p style={styles.subText}>Unlimited access to research summaries in 3 easy steps:</p>
+        <h2 style={styles.heading}>WELCOME BACK!</h2>
+        <p style={styles.subText}>Log in to access your saved summaries and preferences.</p>
 
-        <form onSubmit={handleSignup} style={styles.form}>
-          <h3 style={styles.sectionTitle}>CREATE ACCOUNT</h3>
+        <form onSubmit={handleLogin} style={styles.form}>
+          <h3 style={styles.sectionTitle}>LOGIN</h3>
 
           <input
             type="email"
@@ -32,30 +32,30 @@ const Signup = ({ onSignup }) => {
 
           <input
             type="password"
-            placeholder="Create password"
+            placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
             style={styles.input}
           />
 
-          <button type="submit" style={styles.button}>CREATE FREE ACCOUNT</button>
+          <button type="submit" style={styles.button}>LOG IN</button>
         </form>
 
         <p style={styles.disclaimer}>
-          By clicking continue, you agree to our <a href="#">T&Cs</a> and <a href="#">Privacy Policy</a>.
+          Forgot your password? <a href="#">Reset it here</a>.
         </p>
       </div>
 
       {/* Right Section - Features */}
       <div style={styles.right}>
-        <h3 style={styles.sectionTitle}>✅ What you get:</h3>
+        <h3 style={styles.sectionTitle}>🔐 Why log in?</h3>
         <ul style={styles.features}>
-          <li>🔍 Summarize articles in seconds</li>
-          <li>📚 Access to 100+ academic sources</li>
-          <li>💡 Unlimited free summaries</li>
-          <li>🤖 AI-enhanced suggestions</li>
-          <li>📝 Save summaries to your account</li>
+          <li>💾 Save research summaries</li>
+          <li>📥 Download past summaries</li>
+          <li>🔔 Get personalized recommendations</li>
+          <li>📈 View reading history</li>
+          <li>🛡️ Enhanced data security</li>
         </ul>
       </div>
     </div>
@@ -134,8 +134,8 @@ const styles = {
     paddingLeft: '0',
     fontSize: '15px',
     lineHeight: '2em',
-    color: '#	#ffffff'
+    color: '#333'
   }
 };
 
-export default Signup;
+export default Login;
