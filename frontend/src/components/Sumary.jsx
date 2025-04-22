@@ -1,81 +1,96 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
-const Summary = ({ article }) => {
+const Summary = () => {
   const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const generateSummary = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const pdfUrl = queryParams.get("pdfUrl");
+
+  const generateSummary = async () => {
+    if (!pdfUrl) return;
+
     setLoading(true);
     setError("");
-    axios
-      .post("http://localhost:5000/api/summarize-text", { text: article?.text })
-      .then((res) => {
-        setSummary(res?.data?.summary);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Failed to generate summary.");
-        setLoading(false);
-      });
+    try {
+      const res = await axios.post("http://localhost:5000/api/summary/extract-pdf-text", { pdfUrl });
+      setSummary(res?.data?.summary || "No summary generated.");
+    } catch (err) {
+      console.error("Summary Error:", err);
+      setError("Something went wrong while generating the summary.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const containerStyle = {
-    padding: "20px",
-    maxWidth: "800px",
-    margin: "auto",
-    backgroundColor: "#121212",
-    color: "#e0e0e0",
-    minHeight: "100vh",
-  };
+  const formattedSummary = summary
+    .split("•")
+    .filter(Boolean)
+    .map((point, idx) => <li key={idx}>{point.trim()}</li>);
 
-  const preStyle = {
-    whiteSpace: "pre-wrap",
-    background: "#1e1e1e",
-    padding: "15px",
-    borderRadius: "8px",
-    fontSize: "14px",
-    lineHeight: "1.6",
-    maxHeight: "500px",
-    overflowY: "auto",
-    border: "1px solid #444",
-  };
-
-  const summaryStyle = {
-    background: "#2a2a40",
-    padding: "10px",
-    borderRadius: "6px",
-  };
-
-  const buttonStyle = {
-    marginTop: "20px",
-    padding: "10px 15px",
-    backgroundColor: "#333",
-    color: "#fff",
-    border: "none",
-    cursor: "pointer",
-    borderRadius: "4px",
+  const styles = {
+    container: {
+      padding: "20px",
+      maxWidth: "900px",
+      margin: "auto",
+      color: "#e0e0e0",
+      backgroundColor: "#121212",
+      minHeight: "100vh",
+    },
+    iframe: {
+      border: "1px solid #444",
+      borderRadius: "8px",
+      width: "100%",
+      height: "700px",
+      marginBottom: "20px",
+    },
+    button: {
+      padding: "10px 20px",
+      backgroundColor: "#4A90E2",
+      color: "#fff",
+      fontWeight: "bold",
+      border: "none",
+      borderRadius: "6px",
+      cursor: "pointer",
+      marginBottom: "20px",
+    },
+    list: {
+      backgroundColor: "#1e1e1e",
+      padding: "20px",
+      borderRadius: "8px",
+      lineHeight: "1.7",
+    },
+    error: {
+      color: "red",
+      marginTop: "10px",
+    }
   };
 
   return (
-    <div style={containerStyle}>
-      <h2>Full Extracted Text</h2>
-      <pre style={preStyle}>{article?.text}</pre>
+    <div style={styles.container}>
+      <h2>PDF Viewer</h2>
+      {pdfUrl ? (
+        <iframe src={pdfUrl} title="PDF" style={styles.iframe} />
+      ) : (
+        <p>No PDF URL provided.</p>
+      )}
 
-      <button onClick={generateSummary} disabled={loading} style={buttonStyle}>
-        {loading ? "Generating..." : "Generate Summary"}
+      <button onClick={generateSummary} disabled={loading} style={styles.button}>
+        {loading ? "Generating Summary..." : "Generate Summary"}
       </button>
 
       {summary && (
-        <div style={{ marginTop: "20px" }}>
+        <div>
           <h3>Summary</h3>
-          <p style={summaryStyle}>{summary}</p>
+          <ul style={styles.list}>{formattedSummary}</ul>
         </div>
       )}
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p style={styles.error}>{error}</p>}
     </div>
   );
 };

@@ -1,35 +1,24 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 
-
-const ResearchList = ({ setArticle }) => {
-  const [articles, setArticles] = useState([]);
-  const [loading, setLoading] = useState(false);
+const ResearchList = () => {
+  const [articlesList, setArticlesList] = useState([]);
+  const navigate = useNavigate()
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/research-list", {
+    axios.get("http://localhost:5000/api/summary/research-list", {
       params: { q: "machine learning" }
     })
     .then((res) => {
-      setArticles(res?.data);
+      setArticlesList(res?.data);
     })
     .catch((err) => console.error(err));
   }, []);
 
   const extractPdfText = (pdfUrl) => {
-    setLoading(true);
-    axios
-      .post("http://localhost:5000/api/extract-pdf-text", { pdfUrl })
-      .then((res) => {
-        console.log("Oka: ", res?.data?.text);
-        setArticle(res?.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
-      });
+    navigate(`/viewer?pdfUrl=${encodeURIComponent(pdfUrl)}`);
   };
 
   const styles = {
@@ -96,7 +85,7 @@ const ResearchList = ({ setArticle }) => {
     <div style={styles.container}>
       <h2 style={styles.heading}>Research Articles (arXiv)</h2>
       <ul>
-        {articles.map((article, index) => (
+        {articlesList.map((article, index) => (
           <li key={index} style={styles.articleCard}>
             <h3 style={styles.title}>{article.title}</h3>
             <p style={styles.authors}>
@@ -110,18 +99,9 @@ const ResearchList = ({ setArticle }) => {
                 <button
                   style={{ ...styles.button, ...styles.extractButton }}
                   onClick={() => extractPdfText(article.pdfUrl)}
-                  disabled={loading}
-                >
-                  {loading ? "Extracting..." : "Extract PDF Text"}
-                </button>
-                <a
-                  href={article.pdfUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ ...styles.button, ...styles.viewButton, textDecoration: "none", display: "inline-block" }}
                 >
                   📄 View Full Paper
-                </a>
+                </button>
               </div>
             )}
           </li>

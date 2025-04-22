@@ -7,6 +7,7 @@ const SearchBar = () => {
   const [query, setQuery] = useState('');
   const [papers, setPapers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState('');
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -14,7 +15,7 @@ const SearchBar = () => {
 
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5000/api/research-list?q=${encodeURIComponent(query)}`);
+      const res = await axios.get(`http://localhost:5000/api/summary/research-list?q=${encodeURIComponent(query)}`);
       setPapers(res.data);
     } catch (error) {
       console.error("Error fetching research papers:", error);
