@@ -9,6 +9,8 @@ import SearchBar from './components/Info/searchbar';
 import InfoMessage from './components/Info/info';
 import Signup from './pages/Signup';
 
+import Login from './components/Info/login';
+
 function App() {
   const [user, setUser] = useState(null);
 
