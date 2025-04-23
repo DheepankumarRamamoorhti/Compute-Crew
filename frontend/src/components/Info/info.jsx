@@ -43,9 +43,8 @@ const InfoMessage = () => {
     localStorage.clear();
 
     handleClose();
-
     window.location.href = "/";
-    window.location.reload();
+    navigate('/')
   };
 
   const handleSummaries = () => {

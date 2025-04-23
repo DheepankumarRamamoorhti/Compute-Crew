@@ -23,7 +23,7 @@ const Login = () => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         navigate('/')
-        // window.location.href = "/articles";
+        window.location.href = "/";
       }
     } catch (err) {
       console.error("Login error:", err.response?.data || err.message);
