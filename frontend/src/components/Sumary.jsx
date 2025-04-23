@@ -84,7 +84,11 @@ const Summary = () => {
     <div style={styles.container}>
       <h2>PDF Viewer</h2>
       {pdfUrl ? (
-        <iframe src={pdfUrl} title="PDF" style={styles.iframe} />
+        <iframe
+        src={`${process.env.REACT_APP_API_URL}/api/summary/proxy-pdf?url=${encodeURIComponent(pdfUrl)}`}
+        style={{ width: "100%", height: "750px", border: "none" }}
+      />
+        // <iframe src={pdfUrl} title="PDF" style={styles.iframe} />
       ) : (
         <p>No PDF URL provided.</p>
       )}

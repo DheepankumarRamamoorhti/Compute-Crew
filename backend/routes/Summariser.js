@@ -13,6 +13,7 @@ const pdfParse = require("pdf-parse");
 const summaryCache = new Map(); // In-memory cache
 
 const router = express.Router();
+
 function getRandomQuery() {
     const topics = [
       "machine learning",
@@ -182,6 +183,21 @@ router.get("/research-list", async (req, res) => {
     } catch (error) {
       console.error("PDF Processing Error:", error.response?.data || error.message);
       res.status(500).json({ error: "Failed to extract and summarize PDF." });
+    }
+  });
+
+  router.get('/proxy-pdf', async (req, res) => {
+    console.log("hello")
+    const { url } = req.query;
+    if (!url) return res.status(400).send('PDF URL is required');
+  
+    try {
+      const response = await axios.get(url, { responseType: 'stream' });
+      res.setHeader('Content-Type', 'application/pdf');
+      response.data.pipe(res);
+    } catch (error) {
+      console.error('PDF Proxy Error:', error.message);
+      res.status(500).send('Failed to fetch PDF');
     }
   });
 
