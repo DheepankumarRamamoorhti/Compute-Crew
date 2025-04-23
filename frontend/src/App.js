@@ -14,12 +14,14 @@ import UserSummaries from './components/UserSummary';
 
 function App() {
   const [user, setUser] = useState(null);
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
-    setUser(user)
+    setUser(user);
+    setLoading(false);
   }, [])
   
+  if (loading) return null;
 
   return (
     <Router>
