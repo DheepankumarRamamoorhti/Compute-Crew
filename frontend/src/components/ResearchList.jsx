@@ -84,7 +84,7 @@ const ResearchList = () => {
   <Grid
     container
     spacing={3}
-    justifyContent="center" // ✅ centers the Grid items
+    justifyContent="center"
     maxWidth="1200px"
   >
     {articlesList?.map((article, index) => (

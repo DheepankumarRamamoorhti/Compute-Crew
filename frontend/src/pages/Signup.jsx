@@ -16,9 +16,11 @@ const Signup = () => {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/register`, {name, email, password});
       const data = response?.data;
       if (response?.status !== 201) {
-        alert(data?.error || "Signup failed");
+        alert(data?.error || "Signup failed!!");
         setLoading(false);
         return;
+      }else{
+        alert("✅ User registered Successfully")
       }
 
       // localStorage.setItem("token", response?.token);
