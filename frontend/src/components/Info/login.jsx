@@ -22,7 +22,8 @@ const Login = () => {
       if (data?.token) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        window.location.href = "/articles"; 
+        navigate('/')
+        // window.location.href = "/articles";
       }
     } catch (err) {
       console.error("Login error:", err.response?.data || err.message);

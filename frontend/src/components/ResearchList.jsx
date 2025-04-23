@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
@@ -29,6 +29,9 @@ const ResearchList = () => {
       .catch((err) => console.error(err));
   };
 
+  // useLayoutEffect(() => {
+  //   window.location('/')
+  // }, [third])
   useEffect(() => {
     fetchArticles();
   }, []);
