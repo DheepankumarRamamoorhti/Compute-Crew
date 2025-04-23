@@ -74,13 +74,13 @@ const Signup = () => {
           </button>
         </form>
 
-        {/* <p style={styles.disclaimer}>
+        <p style={styles.disclaimer}>
           If you have already account then, please click on <NavLink to='/login'>Login.</NavLink>
-        </p> */}
-
-        <p style={styles.loginLink}>
-          Already have an account? <a href="/login">Log in</a>
         </p>
+
+        {/* <p style={styles.loginLink}>
+          Already have an account? <a href="/login">Log in</a>
+        </p> */}
       </div>
 
       {/* Right Section - Features */}

@@ -9,7 +9,7 @@ import {
   MenuItem,
   Box,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faNewspaper } from '@fortawesome/free-regular-svg-icons';
 import './info.css';
@@ -44,7 +44,7 @@ const InfoMessage = () => {
 
     handleClose();
 
-    navigate('/sign', { replace: true });
+    window.location.href = "/";
     window.location.reload();
   };
 
@@ -84,7 +84,7 @@ const InfoMessage = () => {
                 size="4x"
                 style={{ marginRight: '16px', color: 'black' }}
               />
-              <h1>Research Paper Summarizer</h1>
+              <NavLink to={'/'}><h1>Research Paper Summarizer</h1></NavLink>
             </div>
           </CardContent>
         </Card>
