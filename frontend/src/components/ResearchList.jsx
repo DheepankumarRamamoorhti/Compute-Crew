@@ -20,7 +20,7 @@ const ResearchList = () => {
 
   const fetchArticles = (query = "") => {
     axios
-      .get("http://localhost:5000/api/summary/research-list", {
+      .get(`${process.env.REACT_APP_API_URL}/api/summary/research-list`, {
         params: { q: query },
       })
       .then((res) => {

@@ -13,8 +13,7 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/register", {name, email, password});
-      console.log("data res: ", response)
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/register`, {name, email, password});
       const data = response?.data;
       if (response?.status !== 201) {
         alert(data?.error || "Signup failed");

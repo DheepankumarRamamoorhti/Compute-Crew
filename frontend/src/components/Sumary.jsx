@@ -27,7 +27,7 @@ const Summary = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.post("http://localhost:5000/api/summary/extract-pdf-text", { pdfUrl });
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/summary/extract-pdf-text`, { pdfUrl });
       const rawSummary = res?.data?.summary || "No summary generated.";
       const cleaned = cleanSummaryText(rawSummary);
       setSummary(cleaned);
