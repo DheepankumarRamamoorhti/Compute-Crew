@@ -92,7 +92,7 @@ const Summary = () => {
       {pdfUrl ? (
         <Box sx={{height: '100vh', overflowY: 'scroll', width: '100%' }}>
           <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
-            <Viewer fileUrl={pdfUrl} />
+            <Viewer fileUrl={secureUrl} />
           </Worker>
         </Box>
       ) : (
