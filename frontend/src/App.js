@@ -27,18 +27,21 @@ function App() {
     <Router>
       <InfoMessage />
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={!user ? <Signup /> : <Navigate to="/articles" />} />
-        <Route path="/login" element={!user ? <Login /> : <Navigate to="/articles" />} />
-
         {/* Protected Routes */}
-        {user && (
+        {user ? (
           <>
             <Route path="/articles" element={<ResearchList />} />
             <Route path="/viewer" element={<Summary />} />
             <Route path="/user-summaries" element={<UserSummaries />} />
           </>
-        )}
+        ) : (
+          <>
+            {/* Public Routes */}
+            <Route path="/" element={<Signup />} />
+            <Route path="/login" element={<Login />} />
+          </>
+        )
+        }
 
         {/* Redirect unknown routes */}
         <Route path="*" element={<Navigate to={user ? "/articles" : "/"} />} />
