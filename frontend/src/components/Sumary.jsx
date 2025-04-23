@@ -15,6 +15,7 @@ const Summary = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const pdfUrl = queryParams.get("pdfUrl");
+  const secureUrl = pdfUrl.replace('http://', 'https://');
 
   const cleanSummaryText = (text) => {
     if (!text) return "";
