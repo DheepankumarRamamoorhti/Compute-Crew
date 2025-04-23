@@ -7,6 +7,7 @@ import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 import { pipeline } from "stream/promises";
+import Summaries from "../models/Summaries.js";
 const require = createRequire(import.meta.url);
 const pdfParse = require("pdf-parse");
 
@@ -183,6 +184,50 @@ router.get("/research-list", async (req, res) => {
     } catch (error) {
       console.error("PDF Processing Error:", error.response?.data || error.message);
       res.status(500).json({ error: "Failed to extract and summarize PDF." });
+    }
+  });
+
+//   save summaries in DB
+
+router.post('/save-summary', async (req, res) => {
+    try {
+      const { userId, pdfUrl, summary } = req.body;
+  
+      if (!userId || !pdfUrl || !summary) {
+        return res.status(400).json({ message: 'Missing fields' });
+      }
+  
+      // 🔍 Check if already exists for same user and PDF
+      const existing = await Summaries.findOne({ userId, pdfUrl });
+  
+      if (existing) {
+        return res.status(409).json({ message: 'Summary already exists for this PDF and user.' });
+      }
+  
+      const newSummary = new Summaries({ userId, pdfUrl, summary });
+      await newSummary.save();
+  
+      res.status(201).json({ message: 'Summary saved successfully' });
+    } catch (err) {
+      res.status(500).json({ message: 'Error saving summary', error: err.message });
+    }
+  });
+  
+//   Get summaries of login user
+
+router.get('/user-summaries/:userId', async (req, res) => {
+    try {
+      const { userId } = req.params;
+  
+      if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+      }
+  
+      const summaries = await Summaries.find({ userId }).sort({ createdAt: -1 });
+  
+      res.status(200).json(summaries);
+    } catch (err) {
+      res.status(500).json({ message: 'Error fetching summaries', error: err.message });
     }
   });
 

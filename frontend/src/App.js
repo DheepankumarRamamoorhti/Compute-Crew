@@ -10,6 +10,7 @@ import InfoMessage from './components/Info/info';
 
 import Signup from './pages/Signup';
 import Login from './components/Info/login';
+import UserSummaries from './components/UserSummary';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -33,6 +34,7 @@ function App() {
           <>
             <Route path="/articles" element={<ResearchList />} />
             <Route path="/viewer" element={<Summary />} />
+            <Route path="/user-summaries" element={<UserSummaries />} />
           </>
         )}
 
