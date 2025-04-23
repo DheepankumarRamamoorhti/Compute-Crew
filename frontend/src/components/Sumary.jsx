@@ -11,6 +11,16 @@ const Summary = () => {
   const queryParams = new URLSearchParams(location.search);
   const pdfUrl = queryParams.get("pdfUrl");
 
+  const cleanSummaryText = (text) => {
+    if (!text) return "";
+    return text
+      .replace(/\b([A-Z][a-z]+)([A-Z][a-z]+)\b/g, (match, p1, p2) => `${p1} ${p2}`) // fix CamelCase
+      .replace(/\b(AbstrACT|ThisTechnical|Thesummary)/gi, "") // remove junk tokens
+      .replace(/\b([a-z])([A-Z])\b/g, (match, p1, p2) => `${p1} ${p2}`) // add space between a and A
+      .replace(/\s+/g, " ")
+      .trim();
+  };
+
   const generateSummary = async () => {
     if (!pdfUrl) return;
 
@@ -18,7 +28,9 @@ const Summary = () => {
     setError("");
     try {
       const res = await axios.post("http://localhost:5000/api/summary/extract-pdf-text", { pdfUrl });
-      setSummary(res?.data?.summary || "No summary generated.");
+      const rawSummary = res?.data?.summary || "No summary generated.";
+      const cleaned = cleanSummaryText(rawSummary);
+      setSummary(cleaned);
     } catch (err) {
       console.error("Summary Error:", err);
       setError("Something went wrong while generating the summary.");
@@ -26,11 +38,6 @@ const Summary = () => {
       setLoading(false);
     }
   };
-
-  const formattedSummary = summary
-    .split("•")
-    .filter(Boolean)
-    .map((point, idx) => <li key={idx}>{point.trim()}</li>);
 
   const styles = {
     container: {
@@ -58,11 +65,14 @@ const Summary = () => {
       cursor: "pointer",
       marginBottom: "20px",
     },
-    list: {
-      backgroundColor: "#1e1e1e",
+    summaryBox: {
+      backgroundColor: "#1e1e2f",
       padding: "20px",
-      borderRadius: "8px",
-      lineHeight: "1.7",
+      borderRadius: "10px",
+      fontSize: "16px",
+      lineHeight: "1.8",
+      color: "#ddd",
+      fontFamily: "Segoe UI, sans-serif"
     },
     error: {
       color: "red",
@@ -86,7 +96,7 @@ const Summary = () => {
       {summary && (
         <div>
           <h3>Summary</h3>
-          <ul style={styles.list}>{formattedSummary}</ul>
+          <div style={styles.summaryBox}>{summary}</div>
         </div>
       )}
 

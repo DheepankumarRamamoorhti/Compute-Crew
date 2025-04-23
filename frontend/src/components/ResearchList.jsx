@@ -1,113 +1,131 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import {
+  Box,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  TextField,
+  InputAdornment,
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 
 const ResearchList = () => {
   const [articlesList, setArticlesList] = useState([]);
-  const navigate = useNavigate()
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+
+  const fetchArticles = (query = "") => {
+    axios
+      .get("http://localhost:5000/api/summary/research-list", {
+        params: { q: query },
+      })
+      .then((res) => {
+        setArticlesList(res?.data);
+      })
+      .catch((err) => console.error(err));
+  };
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/summary/research-list", {
-      params: { q: "machine learning" }
-    })
-    .then((res) => {
-      setArticlesList(res?.data);
-    })
-    .catch((err) => console.error(err));
+    fetchArticles();
   }, []);
 
   const extractPdfText = (pdfUrl) => {
     navigate(`/viewer?pdfUrl=${encodeURIComponent(pdfUrl)}`);
   };
 
-  const styles = {
-    container: {
-      backgroundColor: "#121212",
-      color: "#FFFFFF",
-      minHeight: "100vh",
-      padding: "30px",
-      fontFamily: "Arial, sans-serif",
-    },
-    heading: {
-      fontSize: "28px",
-      fontWeight: "600",
-      marginBottom: "20px",
-      borderBottom: "1px solid #333",
-      paddingBottom: "10px",
-    },
-    articleCard: {
-      backgroundColor: "#1E1E1E",
-      padding: "20px",
-      borderRadius: "12px",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-      marginBottom: "20px",
-      transition: "box-shadow 0.3s ease",
-    },
-    title: {
-      fontSize: "20px",
-      fontWeight: "bold",
-      marginBottom: "8px",
-    },
-    authors: {
-      fontStyle: "italic",
-      color: "#BBBBBB",
-      fontSize: "14px",
-      marginBottom: "4px",
-    },
-    published: {
-      fontSize: "13px",
-      color: "#AAAAAA",
-      marginBottom: "15px",
-    },
-    buttonGroup: {
-      display: "flex",
-      gap: "12px",
-    },
-    button: {
-      padding: "10px 16px",
-      borderRadius: "8px",
-      fontSize: "14px",
-      border: "none",
-      cursor: "pointer",
-    },
-    extractButton: {
-      backgroundColor: "#7C3AED",
-      color: "#FFFFFF",
-    },
-    viewButton: {
-      backgroundColor: "#2563EB",
-      color: "#FFFFFF",
-    },
+  const handleSearch = () => {
+    fetchArticles(searchTerm);
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.heading}>Research Articles (arXiv)</h2>
-      <ul>
-        {articlesList.map((article, index) => (
-          <li key={index} style={styles.articleCard}>
-            <h3 style={styles.title}>{article.title}</h3>
-            <p style={styles.authors}>
-              Authors: {article.authors.join(", ")}
-            </p>
-            <p style={styles.published}>
-              Published: {new Date(article.published).toDateString()}
-            </p>
-            {article.pdfUrl && (
-              <div style={styles.buttonGroup}>
-                <button
-                  style={{ ...styles.button, ...styles.extractButton }}
-                  onClick={() => extractPdfText(article.pdfUrl)}
-                >
-                  📄 View Full Paper
-                </button>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <Box sx={{ backgroundColor: "#0F0F0F", color: "#fff", minHeight: "100vh", p: 4 }}>
+      <Typography variant="h4" gutterBottom>
+        Research Articles
+      </Typography>
+
+      <Box sx={{ mb: 4, display: "flex", gap: 2 }}>
+        <TextField
+          variant="outlined"
+          placeholder="Search research articles..."
+          fullWidth
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{
+            backgroundColor: "#1e1e1e",
+            borderRadius: 1,
+            input: { color: "#fff" },
+            fieldset: { borderColor: "#333" },
+          }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: "#aaa" }} />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Button
+          variant="contained"
+          onClick={handleSearch}
+          sx={{ backgroundColor: "#4A90E2", fontWeight: "bold" }}
+        >
+          Search
+        </Button>
+      </Box>
+        
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+  <Grid
+    container
+    spacing={3}
+    justifyContent="center" // ✅ centers the Grid items
+    maxWidth="1200px"
+  >
+    {articlesList?.map((article, index) => (
+      <Grid item xs={12} sm={6} md={6} lg={4} xl={4} key={index}>
+        <Card
+          sx={{
+            backgroundColor: "#1E1E1E",
+            color: "#fff",
+            borderRadius: 2,
+            width: "300px",
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-around",
+          }}
+        >
+          <CardContent sx={{ flexGrow: 1 }}>
+            <Typography variant="h6" gutterBottom>
+              {article?.title}
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#aaa" }}>
+              Authors: {article?.authors?.join(", ")}
+            </Typography>
+            <Typography variant="caption" sx={{ mt: 1, color: "#888" }}>
+              Published: {new Date(article?.published).toDateString()}
+            </Typography>
+          </CardContent>
+          <Box sx={{ p: 2 }}>
+            <Button
+              variant="contained"
+              fullWidth
+              sx={{ backgroundColor: "#7C3AED" }}
+              onClick={() => extractPdfText(article?.pdfUrl)}
+            >
+              📄 View Full Paper
+            </Button>
+          </Box>
+        </Card>
+      </Grid>
+    ))}
+  </Grid>
+</Box>
+
+    </Box>
   );
 };
 

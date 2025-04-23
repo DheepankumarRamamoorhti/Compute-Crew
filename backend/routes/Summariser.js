@@ -2,15 +2,32 @@ import express from "express";
 import axios from "axios";
 import xml2js from "xml2js";
 import https from "https";
+import { createRequire } from "module";
 import fs from "fs";
 import path from "path";
+import crypto from "crypto";
 import { pipeline } from "stream/promises";
+const require = createRequire(import.meta.url);
+const pdfParse = require("pdf-parse");
+
+const summaryCache = new Map(); // In-memory cache
 
 const router = express.Router();
+function getRandomQuery() {
+    const topics = [
+      "machine learning",
+      "neural networks",
+      "quantum computing",
+      "natural language processing",
+      "computer vision",
+      "reinforcement learning"
+    ];
+    return topics[Math.floor(Math.random() * topics.length)];
+  }
 // Route to search for papers
 router.get("/research-list", async (req, res) => {
-    const searchTerm = req.query.q || "artificial intelligence";
-    const apiUrl = `http://export.arxiv.org/api/query?search_query=all:${encodeURIComponent(searchTerm)}&max_results=10`;
+    const searchTerm = req.query.q?.trim() || getRandomQuery();
+    const apiUrl = `http://export.arxiv.org/api/query?search_query=all:${encodeURIComponent(searchTerm)}&max_results=20`;
   
     try {
       const response = await axios.get(apiUrl);
@@ -42,174 +59,102 @@ router.get("/research-list", async (req, res) => {
     }
   });
   
-  // AI Summary Route
-  // router.post("/summarize-pdf-chatgpt", async (req, res) => {
-  //   const { pdfUrl } = req.body;
+  function preprocessText(text) {
+    return text
+      .replace(/\n+/g, ' ')
+      .replace(/\s{2,}/g, ' ')
+      .replace(/([a-z])([A-Z])/g, '$1 $2') // fix merged words
+      .replace(/[^a-zA-Z0-9.,;:(){}\[\]\s-]/g, '') // strip weird characters
+      .replace(/(page \d+|doi:.*|https?:\/\/\S+)/gi, '')
+      .trim();
+  }
   
-  //   if (!pdfUrl) {
-  //     return res.status(400).json({ error: "PDF URL is required." });
-  //   }
-  
-  //   const fileName = `temp-${Date.now()}.pdf`;
-  //   const filePath = path.join(process.cwd(), fileName);
-  
-  //   try {
-  //     // Step 1: Download the PDF
-  //     const response = await axios.get(pdfUrl, { responseType: "stream" });
-  //     await pipeline(response.data, fs.createWriteStream(filePath));
-  
-  //     // Step 2: Upload the PDF to OpenAI
-  //     const form = new FormData.default();
-  //     form.append("file", fs.createReadStream(filePath));
-  //     form.append("purpose", "assistants");
-  
-  //     const uploadRes = await axios.post("https://api.openai.com/v1/files", form, {
-  //       headers: {
-  //         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-  //         "OpenAI-Beta": "assistants=v2",
-  //         ...form.getHeaders(),
-  //       },
-  //     });
-  
-  //     const fileId = uploadRes.data.id;
-  
-  //     // Step 3: Create a thread and add message + file in one step
-  //     const threadRes = await axios.post(
-  //       "https://api.openai.com/v1/threads",
-  //       {
-  //         messages: [
-  //           {
-  //             role: "user",
-  //             content: "Please summarize this research paper.",
-  //             attachments: [
-  //               {
-  //                 file_id: fileId,
-  //                 tools: [{ type: "file_search" }]
-  //               }
-  //             ]
-  //           }
-  //         ]
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-  //           "Content-Type": "application/json",
-  //           "OpenAI-Beta": "assistants=v2",
-  //         },
-  //       }
-  //     );
-  //     const threadId = threadRes.data.id;
-  
-  //     // Step 4: Run the assistant
-  //     const runRes = await axios.post(
-  //       `https://api.openai.com/v1/threads/${threadId}/runs`,
-  //       {
-  //         assistant_id: process.env.OPENAI_ASSISTANT_ID,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-  //           "Content-Type": "application/json",
-  //           "OpenAI-Beta": "assistants=v2",
-  //         },
-  //       }
-  //     );
-  
-  //     const runId = runRes.data.id;
-  
-  //     // Step 5: Poll for completion
-  //     let runStatus = "queued";
-  //     let attempts = 0;
-  //     let summary = "";
-  
-  //     while (runStatus === "queued" || runStatus === "in_progress") {
-  //       if (attempts > 20) {
-  //         throw new Error("Timed out waiting for the summary.");
-  //       }
-  //       await new Promise(resolve => setTimeout(resolve, 2000));
-  //       const statusRes = await axios.get(
-  //         `https://api.openai.com/v1/threads/${threadId}/runs/${runId}`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-  //             "OpenAI-Beta": "assistants=v2",
-  //           },
-  //         }
-  //       );
-  //       runStatus = statusRes.data.status;
-  //       attempts++;
-  //     }
-  //     if (runStatus === "failed") {
-  //       const runDetails = await axios.get(
-  //         `https://api.openai.com/v1/threads/${threadId}/runs/${runId}`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-  //             "OpenAI-Beta": "assistants=v2",
-  //           },
-  //         }
-  //       );
-  //       console.error("🛑 Run failed reason:", runDetails.data.last_error);
-  //     }
-  // console.log("runStatus: ", runStatus);
-  //     if (runStatus === "completed") {
-  //       const messagesRes = await axios.get(
-  //         `https://api.openai.com/v1/threads/${threadId}/messages`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-  //             "OpenAI-Beta": "assistants=v2",
-  //           },
-  //         }
-  //       );
-  
-  //       const messages = messagesRes.data.data;
-  //       console.log("message: ", messages);
-  //       summary = messages.find(msg => msg.role === "assistant")?.content[0]?.text?.value || "No summary found.";
-  //       console.log("summary: ", summary);
-  //     }
-  
-  //     fs.unlinkSync(filePath);
-  //     res.json({ summary });
-  
-  //   } catch (error) {
-  //     console.error("PDF Summary Error:", error.response?.data || error.message);
-  //     res.status(500).json({ error: "Failed to summarize PDF." });
-  //   }
-  // });
+  function getTextHash(text) {
+    return crypto.createHash("sha256").update(text).digest("hex");
+  }
   
   async function summarizeText(text) {
-    const CHUNK_SIZE = 5000;
-    const chunks = [];
-    for (let i = 0; i < text.length; i += CHUNK_SIZE) {
-      chunks.push(text.slice(i, i + CHUNK_SIZE));
+    const cleanText = preprocessText(text);
+    const slicedText = cleanText.slice(0, 10000);
+    const hash = getTextHash(slicedText);
+  
+    if (summaryCache.has(hash)) {
+      return summaryCache.get(hash);
     }
   
-    const summaries = [];
-    for (const chunk of chunks) {
-      try {
-        const response = await axios.post(
-          "https://api-inference.huggingface.co/models/google/pegasus-xsum",
-          { inputs: chunk },
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        summaries.push(response.data[0]?.summary_text || "");
-      } catch (err) {
-        console.error("Hugging Face model error:", err.response?.data || err.message);
-        throw new Error("Model is unavailable or busy. Try again later.");
-      }
-    }
+    const model = slicedText.length < 3000
+      ? "google/pegasus-xsum"
+      : "pszemraj/led-large-book-summary";
   
-    return summaries
-      .filter((s) => s.trim() !== "")
-      .map((s) => `• ${s.trim()}`)
-      .join("\n\n");
+    const prompt = `
+  You are a helpful research summarization assistant.
+  
+  Summarize the following academic paper clearly and in formal tone. Focus on the main problem, methods, results, and conclusions. Avoid repetition and ignore names, emails, or footers.
+  
+  Text:
+  """
+  ${slicedText}
+  """`;
+  
+    try {
+      const response = await axios.post(
+        `https://api-inference.huggingface.co/models/${model}`,
+        { inputs: prompt },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      const raw = response.data[0];
+      const summary = raw?.generated_text?.trim() || raw?.summary_text?.trim() || "Summary not generated.";
+  
+      summaryCache.set(hash, summary);
+      return summary;
+    } catch (err) {
+      console.error("❌ Hugging Face model error:", err.response?.data || err.message);
+      throw new Error("Failed to generate summary. Model may be busy or unavailable.");
+    }
   }
+  
+  // Hugging Face Pegasus-XSum Summarization
+//   async function summarizeText(text) {
+//     const CHUNK_SIZE = 3000;
+//     const cleanText = preprocessText(text);
+//     const chunks = [];
+  
+//     for (let i = 0; i < cleanText.length; i += CHUNK_SIZE) {
+//       chunks.push(cleanText.slice(i, i + CHUNK_SIZE));
+//     }
+//     for (const chunk of chunks) {
+//       try {
+//         const response = await axios.post(
+//           "https://api-inference.huggingface.co/models/pszemraj/led-large-book-summary",
+//           { inputs: chunk },
+//           {
+//             headers: {
+//               Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+//               "Content-Type": "application/json",
+//             },
+//           }
+//         );
+//         console.log("response.data[0]: ", response.data[0])
+//         const summary = response.data[0]?.summary_text?.trim();
+//         return summary || "Summary not generated.";
+//       } catch (err) {
+//         console.error("Hugging Face model error:", err.response?.data || err.message);
+//         throw new Error("Model is unavailable or busy. Try again later.");
+//       }
+//     }
+  
+//     const formatted = summary
+//   .split(/(?<=\\.)\\s+/)
+//   .map(s => `<li>${s.trim()}</li>`)
+//   .join('\n');
+// return `<ul>${formatted}</ul>`;
+//   }
   
   // Step 1: Extract PDF Text and pass to summarizer
   router.post("/extract-pdf-text", async (req, res) => {

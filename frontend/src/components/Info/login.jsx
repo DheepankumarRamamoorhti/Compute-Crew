@@ -1,13 +1,35 @@
+import axios from 'axios';
 import React, { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 
-const Login = ({ onLogin }) => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const handleLogin = (e) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email && password) {
-      onLogin(email); // Proceed to app
+    setLoading(true);
+  
+    try {
+      const res = await axios.post("http://localhost:5000/api/auth/login", {
+        email,
+        password
+      });
+      
+      const data = res?.data;
+      if (data?.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        window.location.href = "/articles"; 
+      }
+    } catch (err) {
+      console.error("Login error:", err.response?.data || err.message);
+      setError(err.response?.data?.error)
+      alert(err.response?.data?.error || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,23 +61,28 @@ const Login = ({ onLogin }) => {
             style={styles.input}
           />
 
-          <button type="submit" style={styles.button}>LOG IN</button>
+          <button type="submit" style={styles.button}>{loading ? 'Loading...' : 'Signin'}</button>
         </form>
-
-        <p style={styles.disclaimer}>
-          Forgot your password? <a href="#">Reset it here</a>.
+      {
+        error &&(
+            <p style={styles.error}>
+              {error}
+            </p>
+        )
+      }
+       <p style={styles.disclaimer}>
+          If you don't have an account then, please click on <NavLink to='/signup'>Signup.</NavLink>
         </p>
       </div>
 
       {/* Right Section - Features */}
       <div style={styles.right}>
-        <h3 style={styles.sectionTitle}>🔐 Why log in?</h3>
+        <h3 style={styles.sectionTitle}>✅ What will you get:</h3>
         <ul style={styles.features}>
-          <li>💾 Save research summaries</li>
-          <li>📥 Download past summaries</li>
-          <li>🔔 Get personalized recommendations</li>
-          <li>📈 View reading history</li>
-          <li>🛡️ Enhanced data security</li>
+          <li>🔍 Summarize articles in seconds</li>
+          <li>📚 Access to 100+ academic sources</li>
+          <li>💡 Unlimited free summaries</li>
+          <li>🤖 AI-enhanced suggestions</li>
         </ul>
       </div>
     </div>
@@ -129,12 +156,19 @@ const styles = {
     fontSize: '12px',
     color: '#777'
   },
+  
+  error: {
+    marginTop: '14px',
+    fontSize: '12px',
+    color: 'red'
+  },
+
   features: {
     listStyleType: 'none',
     paddingLeft: '0',
     fontSize: '15px',
     lineHeight: '2em',
-    color: '#333'
+    color: '#fff'
   }
 };
 

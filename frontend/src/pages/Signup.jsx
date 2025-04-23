@@ -1,13 +1,35 @@
+import axios from 'axios';
 import React, { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 
-const Signup = ({ onSignup }) => {
+const Signup = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const handleSignup = (e) => {
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const handleSignup = async (e) => {
     e.preventDefault();
-    if (email && password) {
-      onSignup(email); // Proceed to app
+    setLoading(true);
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/auth/register", {name, email, password});
+      console.log("data res: ", response)
+      const data = response?.data;
+      if (response?.status !== 201) {
+        alert(data?.error || "Signup failed");
+        setLoading(false);
+        return;
+      }
+
+      // localStorage.setItem("token", response?.token);
+      // localStorage.setItem("userEmail", response?.user?.email);
+      navigate('/login');
+      // onSignup(data.user.email);
+    } catch (err) {
+      alert(err.response?.data?.error || "Signup failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -21,6 +43,15 @@ const Signup = ({ onSignup }) => {
         <form onSubmit={handleSignup} style={styles.form}>
           <h3 style={styles.sectionTitle}>CREATE ACCOUNT</h3>
 
+          <input
+            type="name"
+            placeholder="Enter your full name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            style={styles.input}
+          />
+          
           <input
             type="email"
             placeholder="Enter your email address"
@@ -39,23 +70,24 @@ const Signup = ({ onSignup }) => {
             style={styles.input}
           />
 
-          <button type="submit" style={styles.button}>CREATE FREE ACCOUNT</button>
+          <button type="submit" style={styles.button} disabled={loading}>
+            {loading ? "Creating Account..." : "CREATE FREE ACCOUNT"}
+          </button>
         </form>
 
         <p style={styles.disclaimer}>
-          By clicking continue, you agree to our <a href="#">T&Cs</a> and <a href="#">Privacy Policy</a>.
+          If you have already account then, please click on <NavLink to='/login'>Login.</NavLink>
         </p>
       </div>
 
       {/* Right Section - Features */}
       <div style={styles.right}>
-        <h3 style={styles.sectionTitle}>✅ What you get:</h3>
+        <h3 style={styles.sectionTitle}>✅ What will you get:</h3>
         <ul style={styles.features}>
           <li>🔍 Summarize articles in seconds</li>
           <li>📚 Access to 100+ academic sources</li>
           <li>💡 Unlimited free summaries</li>
           <li>🤖 AI-enhanced suggestions</li>
-          <li>📝 Save summaries to your account</li>
         </ul>
       </div>
     </div>
@@ -134,7 +166,7 @@ const styles = {
     paddingLeft: '0',
     fontSize: '15px',
     lineHeight: '2em',
-    color: '#	#ffffff'
+    color: '#fff'
   }
 };
 
