@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+// import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
+import { Worker, Viewer } from '@react-pdf-viewer/core';
+import '@react-pdf-viewer/core/lib/styles/index.css';
+import '@react-pdf-viewer/default-layout/lib/styles/index.css';
+import { Box } from "@mui/material";
 
 const Summary = () => {
   const [summary, setSummary] = useState("");
@@ -43,15 +48,14 @@ const Summary = () => {
     container: {
       padding: "20px",
       maxWidth: "900px",
-      margin: "auto",
+      margin: "10%",
       color: "#e0e0e0",
       backgroundColor: "#121212",
       minHeight: "100vh",
     },
-    iframe: {
+    viewer: {
       border: "1px solid #444",
       borderRadius: "8px",
-      width: "100%",
       height: "700px",
       marginBottom: "20px",
     },
@@ -83,16 +87,17 @@ const Summary = () => {
   return (
     <div style={styles.container}>
       <h2>PDF Viewer</h2>
+
       {pdfUrl ? (
-        <iframe
-        src={`${process.env.REACT_APP_API_URL}/api/summary/proxy-pdf?url=${encodeURIComponent(pdfUrl)}`}
-        style={{ width: "100%", height: "750px", border: "none" }}
-      />
-        // <iframe src={pdfUrl} title="PDF" style={styles.iframe} />
+        <Box sx={{height: '100vh', overflowY: 'scroll', width: '100%' }}>
+          <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
+            <Viewer fileUrl={pdfUrl} />
+          </Worker>
+        </Box>
       ) : (
         <p>No PDF URL provided.</p>
       )}
-
+      <br/>
       <button onClick={generateSummary} disabled={loading} style={styles.button}>
         {loading ? "Generating Summary..." : "Generate Summary"}
       </button>
