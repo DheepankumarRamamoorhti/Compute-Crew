@@ -51,11 +51,11 @@ const Signup = ({ onSignup }) => {
       <div style={styles.right}>
         <h3 style={styles.sectionTitle}>✅ What you get:</h3>
         <ul style={styles.features}>
-          <li>🔍 Summarize articles in seconds</li>
-          <li>📚 Access to 100+ academic sources</li>
-          <li>💡 Unlimited free summaries</li>
-          <li>🤖 AI-enhanced suggestions</li>
-          <li>📝 Save summaries to your account</li>
+          <li style={styles.featureItem}>🔍 Summarize articles in seconds</li>
+          <li style={styles.featureItem}>📚 Access to 100+ academic sources</li>
+          <li style={styles.featureItem}>💡 Unlimited free summaries</li>
+          <li style={styles.featureItem}>🤖 AI-enhanced suggestions</li>
+          <li style={styles.featureItem}>📝 Save summaries to your account</li>
         </ul>
       </div>
     </div>
@@ -132,9 +132,20 @@ const styles = {
   features: {
     listStyleType: 'none',
     paddingLeft: '0',
-    fontSize: '15px',
-    lineHeight: '2em',
-    color: '#	#ffffff'
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px'
+  },
+  featureItem: {
+    backgroundColor: '#1e3a8a',
+    color: 'white',
+    padding: '12px 16px',
+    borderRadius: '10px',
+    boxShadow: '0 3px 10px rgba(0,0,0,0.1)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    fontSize: '14px',
   }
 };
 
