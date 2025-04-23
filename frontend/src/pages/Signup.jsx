@@ -45,6 +45,10 @@ const Signup = ({ onSignup }) => {
         <p style={styles.disclaimer}>
           By clicking continue, you agree to our <a href="#">T&Cs</a> and <a href="#">Privacy Policy</a>.
         </p>
+
+        <p style={styles.loginLink}>
+          Already have an account? <a href="/login">Log in</a>
+        </p>
       </div>
 
       {/* Right Section - Features */}
@@ -128,6 +132,12 @@ const styles = {
     marginTop: '14px',
     fontSize: '12px',
     color: '#777'
+  },
+  loginLink: {
+    marginTop: '12px',
+    fontSize: '13px',
+    color: '#444',
+    textAlign: 'center',
   },
   features: {
     listStyleType: 'none',
