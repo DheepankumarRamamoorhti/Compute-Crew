@@ -1,7 +1,6 @@
 {
   "name": "backend",
   "type": "module",
-
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -21,6 +20,7 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.13.2",
+    "nodemon": "^3.1.10",
     "pdf-parse": "^1.1.1",
     "xml2js": "^0.6.2"
   }

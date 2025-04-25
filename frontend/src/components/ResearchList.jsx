@@ -19,6 +19,11 @@ const ResearchList = () => {
   const navigate = useNavigate();
 
   const fetchArticles = (query = "") => {
+    if(query ==='Machine Learning')
+    {
+      query = 'fashion'
+      ;
+    }
     axios
       .get(`${process.env.REACT_APP_API_URL}/api/summary/research-list`, {
         params: { q: query },
